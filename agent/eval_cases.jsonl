@@ -1,0 +1,30 @@
+{"state": "User request: I need a laptop for gaming under $1500", "expected": {"tool": "search_laptops"}, "split": "tune"}
+{"state": "User request: What's the best laptop for a college student on a tight budget?", "expected": {"tool": "search_laptops"}, "split": "test"}
+{"state": "User request: I'm a software developer, show me laptops around $2000", "expected": {"tool": "search_laptops"}, "split": "tune"}
+{"state": "User request: Find me something for video editing with at least 16 GB RAM", "expected": {"tool": "search_laptops"}, "split": "test"}
+{"state": "User request: Compare the MacBook Pro 14 M4 Pro and the Dell XPS 15 OLED", "expected": {"tool": "compare_laptops"}, "split": "tune"}
+{"state": "User request: How does the ASUS ROG Zephyrus G14 stack up against the Razer Blade 15?", "expected": {"tool": "compare_laptops"}, "split": "test"}
+{"state": "User request: MacBook Air 15 M3 vs Lenovo ThinkPad X1 Carbon", "expected": {"tool": "compare_laptops"}, "split": "tune"}
+{"state": "User request: Can you compare Framework 13 and Dell XPS 13 Plus for me?", "expected": {"tool": "compare_laptops"}, "split": "test"}
+{"state": "User request: Show me laptops under $700", "expected": {"tool": "filter_by_budget"}, "split": "tune"}
+{"state": "User request: I have a maximum budget of $1200, what can I get?", "expected": {"tool": "filter_by_budget"}, "split": "test"}
+{"state": "User request: What are my options under $500?", "expected": {"tool": "filter_by_budget"}, "split": "tune"}
+{"state": "User request: List all laptops I can get for $1000 or less", "expected": {"tool": "filter_by_budget"}, "split": "test"}
+{"state": "User request: Tell me about the LG Gram 17 2024", "expected": {"tool": "get_laptop_details"}, "split": "tune"}
+{"state": "User request: What are the full specs for the Lenovo ThinkPad P16 Gen 2?", "expected": {"tool": "get_laptop_details"}, "split": "test"}
+{"state": "User request: Give me details on the HP Spectre x360 14", "expected": {"tool": "get_laptop_details"}, "split": "tune"}
+{"state": "User request: I want to know everything about the ASUS ProArt Studiobook 16", "expected": {"tool": "get_laptop_details"}, "split": "test"}
+{"state": "User request: What is the difference between a laptop and a desktop?", "expected": {"tool": "none"}, "split": "tune"}
+{"state": "User request: How do I clean my laptop screen?", "expected": {"tool": "none"}, "split": "test"}
+{"state": "User request: Thanks for your help!", "expected": {"tool": "none"}, "split": "tune"}
+{"state": "User request: Hello! Can you help me choose a laptop?", "expected": {"tool": "none"}, "split": "test"}
+{"state": "User request: Best gaming laptops with RTX 4070", "expected": {"tool": "search_laptops"}, "split": "tune"}
+{"state": "User request: Which laptop is the lightest 17-inch available?", "expected": {"tool": "search_laptops"}, "split": "test"}
+{"state": "User request: I need something for 3D rendering, budget is flexible", "expected": {"tool": "search_laptops"}, "split": "tune"}
+{"state": "User request: Recommendations for a business laptop that travels well?", "expected": {"tool": "search_laptops"}, "split": "test"}
+{"state": "User request: Compare Acer Swift Go 14 and Lenovo IdeaPad Slim 5i", "expected": {"tool": "compare_laptops"}, "split": "tune"}
+{"state": "User request: How do the Samsung Galaxy Book4 Pro and Microsoft Surface Laptop 5 differ?", "expected": {"tool": "compare_laptops"}, "split": "test"}
+{"state": "User request: What can I buy under $350?", "expected": {"tool": "filter_by_budget"}, "split": "tune"}
+{"state": "User request: Anything available for $2500 or less?", "expected": {"tool": "filter_by_budget"}, "split": "test"}
+{"state": "User request: Details on the MSI Creator Z16P RTX 4070 Ti", "expected": {"tool": "get_laptop_details"}, "split": "tune"}
+{"state": "User request: Full review and specs for the Framework 13 AMD", "expected": {"tool": "get_laptop_details"}, "split": "test"}

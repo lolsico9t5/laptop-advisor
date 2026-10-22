@@ -1,0 +1,21 @@
+title: "LaptopAdvisor: tell it what you need, it finds your perfect laptop"
+pitch: "A conversational laptop recommendation agent powered by Amazon Bedrock and Strands Decider."
+features:
+  - "describe your needs in plain language — budget, use case, preferences"
+  - "Strands Decider picks the right tool before the LLM responds"
+  - "search by use case, compare two models, filter by price, or get full specs"
+  - "honest trade-offs: battery, weight, price and OS explained clearly"
+  - "deployed on Amazon Bedrock AgentCore Runtime"
+eager: false
+intro: "LaptopAdvisor helps anyone find the right laptop by understanding their needs in plain language. The agent runs on Amazon Bedrock. Strands Decider picks which tool to call for each request — search, compare, filter or detail — before the LLM responds."
+intro_normal: "LaptopAdvisor runs on Amazon Bedrock AgentCore Runtime. Strands Decider picks the right tool for each request before the LLM responds."
+turns:
+  - say: "I am a university student on a tight budget. What laptop do you recommend?"
+    narrate: "A student describes their situation in plain language. The decider picks search_laptops."
+  - say: "Can you compare the MacBook Air and the Lenovo ThinkPad Carbon for me?"
+    narrate: "The user names two specific models. The decider picks compare_laptops."
+  - say: "What laptops are available under five hundred dollars?"
+    narrate: "A price-only question. The decider picks filter_by_budget."
+  - say: "Tell me everything about the LG Gram seventeen inch"
+    narrate: "The user wants full details on one model. The decider picks get_laptop_details."
+outro: "One forward pass per user message. Strands Decider routes each request to the right tool with a typed confidence score the code can act on — faster and cheaper than asking the LLM to decide."

@@ -1,0 +1,17 @@
+# Amazon Bedrock AgentCore features for LaptopAdvisor.
+# Both are off for the local/ugmdu build. Enable before ./kit deploy if needed.
+
+memory:
+  enabled: false
+  name: laptopadvisormem
+  strategies: [USER_PREFERENCE]
+  expiry_days: 30
+
+gateway:
+  enabled: false
+  name: tools
+  authorizer: AWS_IAM
+  targets:
+    - name: websearch
+      type: connector
+      connector: web-search

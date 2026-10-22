@@ -1,0 +1,150 @@
+{
+ "pattern_tag": "#tool-selection",
+ "agentcore_features": [],
+ "pattern_doc": "REUSABLE DECISION PATTERN: tool selection for a laptop recommendation agent  (#tool-selection)\n\nWhat it does\n    Before the LLM responds to a laptop query, Strands Decider 2B reads the user's message and\n    picks exactly which tool should handle it:\n    - is it a search by use case / budget? \u00e2\u2020\u2019 search_laptops\n    - is it a side-by-side comparison of two models? \u00e2\u2020\u2019 compare_laptops\n    - is it a price filter (\"under $X\")? \u00e2\u2020\u2019 filter_by_budget\n    - is it a request for full specs on one model? \u00e2\u2020\u2019 get_laptop_details\n    - can it be answered directly without a tool? \u00e2\u2020\u2019 none\n    When the decider is unsure (confidence below threshold), all tools are kept and the LLM\n    chooses, so no information is lost.\n\nTyped questions and options\n    `tool` (choice): one option per tool (described by its docstring) plus `none`.\n    Options are derived at runtime from the tools list \u00e2\u20ac\u201d adding a tool needs no retraining.\n\nWiring\n    `LaptopToolSelector` wraps `ToolSelector` from `decider_kit.patterns.tool_selection`.\n    `agent/agent.py` calls `selector.tools_for(message)` to get the narrowed tool list, then\n    passes it to the Strands Agent so the LLM sees only the relevant tool in context:\n\n        selector = LaptopToolSelector(decider)\n        agent = Agent(model=..., tools=selector.tools_for(user_message), ...)\n\nHow to reuse it\n    Copy this file. Replace `TOOLS` with your own @tool functions, each with a clear one-line\n    docstring. Adjust `THRESHOLD` if you want the decider to be more or less conservative.\n    The `ToolSelector` class is generic \u00e2\u20ac\u201d it reads the docstrings at runtime, so no question\n    list needs updating when tools change.",
+ "questions_code": "QUESTIONS = questions_for(TOOLS)",
+ "agent_md": "# Use case\n\n- **Pitch:** a laptop recommendation agent that asks what you need and finds the best laptop for you.\n- **Who it is for:** anyone looking to buy a laptop \u00e2\u20ac\u201d students, developers, designers, gamers, or casual users \u00e2\u20ac\u201d who wants a clear, reasoned recommendation without sifting through spec sheets.\n- **Features:**\n  - describe your needs in plain language and get a ranked recommendation;\n  - search the catalog by use case and budget;\n  - compare any two laptop models side-by-side;\n  - filter the full catalog by maximum price;\n  - get detailed specs and a review summary for any model;\n  - Strands Decider 2B picks which tool to call so the LLM focuses on explaining, not routing;\n  - deployed on Amazon Bedrock AgentCore Runtime.\n- **The decision handed to Strands Decider 2B:** for every user request, which tool should handle it \u00e2\u20ac\u201d search by use case, compare two models, filter by budget, or fetch full details? (`#tool-selection`)\n- **Why a decision model:** the agent has four tools with overlapping applicability; handing tool routing to a fast, cheap classification model reduces wrong tool calls, trims tokens from the LLM context, and keeps latency low.\n- **Amazon Bedrock:** the conversation and natural-language reasoning (Amazon Nova Pro by default).\n",
+ "llm_provider_local_runs": "ugmdu",
+ "agent_name": "LaptopAdvisor",
+ "bench": {
+  "summary": {
+   "decider": {
+    "accuracy": 0.8,
+    "decisions": 15,
+    "per_question": {
+     "tool": 0.8
+    },
+    "latency_p50_ms": 1793.8,
+    "latency_p95_ms": 1959.6,
+    "usd_per_1k_decisions": 0.035,
+    "confident_share": 0.5333,
+    "accuracy_when_confident": 1.0,
+    "sent_to_human_at_threshold": 7
+   },
+   "llm": {
+    "accuracy": 0.8667,
+    "decisions": 15,
+    "per_question": {
+     "tool": 0.8667
+    },
+    "latency_p50_ms": 9830.0,
+    "latency_p95_ms": 9966.1,
+    "usd_per_1k_decisions": 0.0,
+    "confident_share": 1.0,
+    "accuracy_when_confident": 0.8667,
+    "sent_to_human_at_threshold": 0
+   },
+   "speedup_p50": 5.48
+  },
+  "decider_model": "strands-decider-2b-hobson-v19",
+  "decider_mode": "ugmdu",
+  "llm_model": "qwen3.5-4b",
+  "cases": 15,
+  "split": "test",
+  "threshold": 0.7
+ },
+ "bench_table": "Decider: strands-decider-2b-hobson-v19 (ugmdu). 15 labelled cases, 15 decisions.\n\n| | Strands Decider 2B | qwen3.5-4b |\n|---|---|---|\n| Accuracy | 80.0% | 86.7% |\n| Latency p50 per decision | 1794 ms | 9830 ms |\n| Latency p95 | 1960 ms | 9966 ms |\n| Cost per 1,000 decisions | $0.0350 | $0.0000 |\n| Answered alone at confidence >= 0.7 | 53% | 100% |\n| Accuracy when confident | 100.0% | 86.7% |\n\nAt the median the decider was 5.5x faster than the LLM.\n",
+ "demo_turns": [
+  {
+   "user": "I am a university student on a tight budget. What laptop do you recommend?",
+   "reply": "Here are two laptops that fit your needs as a university student on a tight budget:\n\n1. **HP Chromebook Plus 14**\n   - **Price:** $349\n   - **RAM:** 8 GB\n   - **Storage:** 128 GB\n   - **Battery Life:** 10 hours\n   - **Weight:** 1.5 kg\n   - **OS:** ChromeOS\n   - **Pros:** Excellent battery life, lightweight, affordable.\n   - **Cons:** Limited software compatibility compared to Windows.\n\n2. **Dell Inspiron 15 3000**\n   - **Price:** $449\n   - **RAM:** 8 GB\n   - **Storage:** 256 GB\n   - **Battery Life:** 7 hours\n   - **Weight:** 1.85 kg\n   - **OS:** Windows\n   - **Pros:** More storage, Windows OS for broader software compatibility.\n   - **Cons:** Slightly heavier and shorter battery life compared to the Chromebook.\n\nBoth options are great for student use, but if you need more storage and prefer Windows, the Dell Inspiron 15 3000 is a solid choice. If you prefer longer battery life and a lighter laptop, the HP Chromebook Plus 14 is excellent.",
+   "decisions": [
+    {
+     "stage": "tool_selection",
+     "tool": "search_laptops",
+     "confidence": 0.834,
+     "narrowed": true,
+     "probabilities": {
+      "search_laptops": 0.834,
+      "compare_laptops": 0.043,
+      "filter_by_budget": 0.074,
+      "get_laptop_details": 0.012,
+      "none": 0.037
+     },
+     "decider_ms": 1106.5130649999978,
+     "pattern": "#tool-selection"
+    }
+   ],
+   "latency_ms": 4348
+  },
+  {
+   "user": "Can you compare the MacBook Air and the Lenovo ThinkPad Carbon for me?",
+   "reply": "Here's a comparison between the Apple MacBook Air 15 M3 and the Lenovo ThinkPad X1 Carbon Gen 12:\n\n### Apple MacBook Air 15 M3\n- **Price:** $1,299\n- **RAM:** 16 GB\n- **Storage:** 512 GB\n- **GPU:** 10-core GPU\n- **Display:** 15.3 inches\n- **Weight:** 1.51 kg\n- **Battery Life:** 18 hours\n- **OS:** macOS\n- **Rating:** 4.8\n- **Pros:** Longer battery life, better for creative work with macOS.\n- **Cons:** Heavier than the ThinkPad.\n\n### Lenovo ThinkPad X1 Carbon Gen 12\n- **Price:** $1,549\n- **RAM:** 16 GB\n- **Storage:** 512 GB\n- **GPU:** Intel Iris Xe\n- **Display:** 14.0 inches\n- **Weight:** 1.12 kg\n- **Battery Life:** 15 hours\n- **OS:** Windows\n- **Rating:** 4.7\n- **Pros:** Lighter, better for business use with Windows.\n- **Cons:** Shorter battery life, more expensive.\n\n### Summary\n- **Cheaper:** Apple MacBook Air 15 M3 ($250 less)\n- **Longer Battery:** Apple MacBook Air 15 M3 (18 hours vs. 15 hours)\n- **Lighter:** Lenovo ThinkPad X1 Carbon Gen 12 (1.12 kg vs. 1.51 kg)\n\nBoth laptops are excellent, but if battery life and macOS are important to you, the MacBook Air is the better choice. If you need a lighter laptop and prefer Windows, the ThinkPad X1 Carbon is ideal.",
+   "decisions": [
+    {
+     "stage": "tool_selection",
+     "tool": "compare_laptops",
+     "confidence": 0.817,
+     "narrowed": true,
+     "probabilities": {
+      "search_laptops": 0.089,
+      "compare_laptops": 0.817,
+      "filter_by_budget": 0.009,
+      "get_laptop_details": 0.025,
+      "none": 0.061
+     },
+     "decider_ms": 2525.2088189999995,
+     "pattern": "#tool-selection"
+    }
+   ],
+   "latency_ms": 5517
+  },
+  {
+   "user": "What laptops are available under five hundred dollars?",
+   "reply": "Here are the top-rated laptops available under $500:\n\n1. **HP Chromebook Plus 14**\n   - **Price:** $349\n   - **RAM:** 8 GB\n   - **Storage:** 128 GB\n   - **Battery Life:** 10 hours\n   - **Weight:** 1.5 kg\n   - **OS:** ChromeOS\n   - **Pros:** Excellent battery life, lightweight.\n   - **Cons:** Limited software compatibility.\n\n2. **Lenovo IdeaPad 3**\n   - **Price:** $499\n   - **RAM:** 8 GB\n   - **Storage:** 256 GB\n   - **Battery Life:** 11 hours\n   - **Weight:** 1.6 kg\n   - **OS:** Windows\n   - **Pros:** Good performance, longer battery life.\n   - **Cons:** Slightly heavier than the Chromebook.\n\n3. **Acer Aspire 5**\n   - **Price:** $479\n   - **RAM:** 8 GB\n   - **Storage:** 256 GB\n   - **Battery Life:** 7 hours\n   - **Weight:** 1.8 kg\n   - **OS:** Windows\n   - **Pros:** Good performance, decent battery life.\n   - **Cons:** Heavier than other options.\n\nAll three laptops offer good value for under $500, with the HP Chromebook Plus 14 being the most affordable and lightweight, while the Lenovo IdeaPad 3 and Acer Aspire 5 provide more storage and performance.",
+   "decisions": [
+    {
+     "stage": "tool_selection",
+     "tool": "filter_by_budget",
+     "confidence": 0.528,
+     "narrowed": false,
+     "probabilities": {
+      "search_laptops": 0.356,
+      "compare_laptops": 0.033,
+      "filter_by_budget": 0.528,
+      "get_laptop_details": 0.008,
+      "none": 0.075
+     },
+     "decider_ms": 5216.212964,
+     "pattern": "#tool-selection"
+    }
+   ],
+   "latency_ms": 3395
+  },
+  {
+   "user": "Tell me everything about the LG Gram seventeen inch",
+   "reply": "Here are the detailed specifications and expert review summary for the LG Gram 17:\n\n### Specifications\n\n- **Model:** LG Gram 17\n- **Price:** $1,399\n- **RAM:** 16 GB\n- **Storage:** 512 GB\n- **GPU:** Intel Iris Xe\n- **Display:** 17.0 inches\n- **Weight:** 1.5 kg\n- **Battery Life:** 22 hours\n- **OS:** Windows\n- **Rating:** 4.6\n\n### Expert Review Summary\n\n- **Performance:** The LG Gram 17 delivers excellent performance with its Intel processor and 16 GB of RAM, making it suitable for multitasking and demanding applications.\n- **Display:** The 17-inch display offers a large, clear screen ideal for productivity and entertainment.\n- **Battery Life:** With a remarkable 22-hour battery life, this laptop is perfect for long workdays or travel.\n- **Weight:** Weighing just 1.5 kg, it is one of the lightest 17-inch laptops available, making it highly portable.\n- **Build Quality:** The laptop features a durable aluminum body, ensuring it can withstand daily use.\n- **Connectivity:** It comes with multiple ports, including USB-C, USB-A, and an HDMI port, providing versatile connectivity options.\n- **Software:** Pre-installed with Windows, it offers a familiar and robust operating system for various applications.\n\n### Pros\n- Exceptional battery life\n- Lightweight for its size\n- High-quality display\n- Durable build\n\n### Cons\n- Premium price point\n- Average GPU performance for gaming\n\nThe LG Gram 17 is an excellent choice for users who need a powerful, lightweight, and long-lasting laptop for productivity and everyday use.",
+   "decisions": [
+    {
+     "stage": "tool_selection",
+     "tool": "get_laptop_details",
+     "confidence": 0.673,
+     "narrowed": true,
+     "probabilities": {
+      "search_laptops": 0.096,
+      "compare_laptops": 0.051,
+      "filter_by_budget": 0.139,
+      "get_laptop_details": 0.673,
+      "none": 0.042
+     },
+     "decider_ms": 7156.817110999995,
+     "pattern": "#tool-selection"
+    }
+   ],
+   "latency_ms": 3614
+  }
+ ],
+ "deployment": {
+  "runtime_arn": "arn:aws:bedrock-agentcore:us-east-1:584751651026:runtime/deciderkit_agent-Qs21OzHMSv",
+  "region": "us-east-1",
+  "deployed_at": 1792670694.557757,
+  "deploy_seconds": 279,
+  "decider_mode": "ugmdu",
+  "bedrock_model": "us.amazon.nova-pro-v1:0",
+  "eager": false,
+  "memories": {},
+  "gateways": {}
+ },
+ "repo_url": "",
+ "video_url": ""
+}
